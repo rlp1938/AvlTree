@@ -12,6 +12,7 @@
 /testtree.t2t
 /Makefile
 /stamp-h1
-/test*
 /Test*
+/testmd5
+/test
 /build.sh
