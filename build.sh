@@ -18,11 +18,16 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
 # MA 02110-1301, USA.
 #
-gcc -Wall -Wextra -g -O0 -c -D_GNU_SOURCE=1 avltree.c
-gcc -Wall -Wextra -g -O0 -c -D_GNU_SOURCE=1 testtree.c
-gcc avltree.o testtree.o -o testtree
-rm *.o
-clear
-ls -tlh
+#gcc -Wall -Wextra -g -O0 -c -D_GNU_SOURCE=1 avltree.c
+#gcc -Wall -Wextra -g -O0 -c -D_GNU_SOURCE=1 testtree.c
+#gcc avltree.o testtree.o -o testtree
 
+#gcc -Wall -Wextra -g gnutree.c -o gnutree
+#gcc -Wall -Wextra -g dups.c -o dups
+
+
+gcc -Wall -Wextra -g testmd5.c -lmhash -o testmd5
+rm *.o
+#clear
+#ls -tlh
 
