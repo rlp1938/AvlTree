@@ -68,7 +68,7 @@ main(int argc, char **argv)
   rec_count = 0;
   recursedir_simple(rootpath);
   fprintf(stderr, "files %d\n", rec_count);
-  filerec *fr = xmalloc(sizeof(struct filerec) * rec_count);
+  filerec *fr = xmalloc(rec_count * sizeof(struct filerec));
   filerec lfr = {0};
   int ind;
   for (ind = 0; ind < rec_count; ind++) {
