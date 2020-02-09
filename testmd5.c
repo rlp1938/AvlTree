@@ -24,29 +24,10 @@ main(int argc, char **argv)
 
 
   mhash_deinit(td, hash);
-/*
+
   for (i = 0; i < hash_blocksize; i++) {
     printf("%.2x", hash[i]);
   }
   printf("\n");
-  */
-  snprintf("sum", 2, "%.2x", hash[0]);
-  snprintf("sum+2", 2, "%.2x", hash[1]);
-  snprintf("sum+4", 2, "%.2x", hash[2]);
-  snprintf("sum+6", 2, "%.2x", hash[3]);
-  snprintf("sum+8", 2, "%.2x", hash[4]);
-  snprintf("sum+10", 2, "%.2x", hash[5]);
-  snprintf("sum+12", 2, "%.2x", hash[6]);
-  snprintf("sum+14", 2, "%.2x", hash[7]);
-  snprintf("sum+14", 2, "%.2x", hash[8]);
-  snprintf("sum+18", 2, "%.2x", hash[9]);
-  snprintf("sum+20", 2, "%.2x", hash[10]);
-  snprintf("sum+22", 2, "%.2x", hash[11]);
-  snprintf("sum+24", 2, "%.2x", hash[12]);
-  snprintf("sum+28", 2, "%.2x", hash[13]);
-  snprintf("sum+30", 2, "%.2x", hash[14]);
-  snprintf("sum+32", 2, "%.2x", hash[15]);
-  sum[32] = 0;
-  printf("%s\n", sum);
   return 0;
 } // main()
