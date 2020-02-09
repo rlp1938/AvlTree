@@ -1,5 +1,3 @@
-#define _GNU_SOURCE     /* Expose declaration of tdestroy() */
-#include <search.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
