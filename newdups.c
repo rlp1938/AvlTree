@@ -106,8 +106,49 @@ int main(int argc, char **argv)
     if (fr[i].fsize > 0 && fr[i].delete_flag == 0) recs1++;
   } // for(i...)
   shown("File records to retain", recs1);
+  /* Records are in order of size, and inode as a secondary key. These
+   * records will be placed in a second list, fr1 for further action. */
+  filerec *fr1 = xcalloc(recs1, sizeof(struct filerec));
+  int j = 0;
+  for (i = 0; i < rec_count; i++) {
+    if (fr[i].fsize > 0 && fr[i].delete_flag == 0) {
+      fr1[j] = fr[i];
+      j++;
+    }
+  } // for(i...)
+  /* As well as unique file sizes, already dealt with, there may be
+   * hard linked blocks of files which will manifest as blocks of
+   * identical sizes paired with identical inodes. This next will
+   * identify any such blocks.
+   * NB only blocks comprising all identical file sizes paired with
+   * identical inodes will be considered as singleton files. There are
+   * more complex possibilties whereby identical files are in more than
+   * one hard linked group. Any such groups will be identified at md5sum
+   * processing time.
+  */
+  size_t starting_size = fr1[0].fsize;
+  ino_t starting_inode = fr1[0].inode;
+  int starting_index = 0;
+  for (i = 1; i < recs1; i++) {
+    if (fr1[i].fsize != starting_size) {
+      if (fr1[i-1].inode == starting_inode) { // singleton inode block
+        for (j = starting_index; j < i; j++) {
+          fr1[j].delete_flag = 1;
+        }
+      }
+    }
+    starting_index = i;
+    starting_inode = fr1[i].inode;
+    starting_size = fr1[i].fsize;
+  }
+  // count the number of items to go to the next list.
+  j = 0;
+  for (i = 0; i < recs1; i++) {
+    if (fr1[i].delete_flag == 0) j++;
+  }
+  int recs2 = j;
   return 0;
-}
+} // main()
 
 static void
 show(const char *s)
