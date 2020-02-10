@@ -23,9 +23,9 @@
 #gcc avltree.o testtree.o -o testtree
 
 #gcc -Wall -Wextra -g gnutree.c -o gnutree
-gcc -Wall -Wextra -g dups.c -lmhash -o dups
+#gcc -Wall -Wextra -g dups.c -lmhash -o dups
+gcc -Wall -Wextra -g newdups.c -lmhash -o dups
 
-#gcc -Wall -Wextra -g isitunique.c -o isitunique
 
 #gcc -Wall -Wextra -g testmd5.c -lmhash -o testmd5
 #rm *.o
