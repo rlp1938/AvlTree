@@ -87,7 +87,7 @@ int main(int argc, char **argv)
    * be a number of fr[] records which are null. After sorting on size,
    * these null records should float to the top of the list.
    * */
-  
+  qsort(fr, rec_count, sizeof(struct filerec), cmpfsize_inodep);
   return 0;
 }
 
