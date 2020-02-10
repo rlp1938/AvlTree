@@ -42,6 +42,28 @@ typedef struct filerec {
 
 int main(int argc, char **argv)
 {
+  if (argc > 2) { // 0 or 1 user input dirs is acceptable.
+    fprintf(stderr, "Extraneous parameter input: %s\n", argv[2]);
+    exit(EXIT_FAILURE);
+  }
+  // get the real path to process.
+  // compare = compare_intp_uniq;
+  char *rootpath;
+  if (argv[1]) {
+    rootpath = realpath(argv[1], NULL);
+  } else {
+    rootpath = realpath("./", NULL);
+  }
+  struct stat sb;
+  if (stat(rootpath, &sb) == -1) {
+    perror(rootpath);
+    exit(EXIT_FAILURE);
+  }
+  fprintf(stderr, "%s\n", rootpath);
+  // recurse the rootpath and count number of regular files.
+  rec_count = 0;
+  recursedir_simple(rootpath);
+  fprintf(stderr, "files %d\n", rec_count);
 
   return 0;
 }
