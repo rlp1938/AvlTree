@@ -88,6 +88,24 @@ int main(int argc, char **argv)
    * these null records should float to the top of the list.
    * */
   qsort(fr, rec_count, sizeof(struct filerec), cmpfsize_inodep);
+  /* Now inspect the file records, and mark those with unique size
+   * for deletion from the list.*/
+  if (fr[0].fsize != fr[1].fsize) fr[0].delete_flag = 1;
+  int i;
+  for (i = 1; i < rec_count-1; i++) {
+    if (fr[i].fsize != fr[i-1].fsize && fr[i].fsize != fr[i+1].fsize) {
+      fr[i].delete_flag = 1;
+    }
+  } // for(i...)
+  if (fr[rec_count-1].fsize != fr[rec_count-2].fsize)
+    fr[rec_count-1].delete_flag = 1;
+  /* Now count the records to retain, those with size > 0, and have
+   * delete flag not set. */
+  int recs1 = 0;
+  for (i = 0; i < rec_count; i++) {
+    if (fr[i].fsize > 0 && fr[i].delete_flag == 0) recs1++;
+  } // for(i...)
+  shown("File records to retain", recs1);
   return 0;
 }
 
