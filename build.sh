@@ -24,10 +24,12 @@
 
 #gcc -Wall -Wextra -g gnutree.c -o gnutree
 #gcc -Wall -Wextra -g dups.c -lmhash -o dups
-gcc -Wall -Wextra -g newdups.c -lmhash -o dups
+gcc -Wall -Wextra -O0 -g newdups.c -lmhash -o dups
 
 
-#gcc -Wall -Wextra -g testmd5.c -lmhash -o testmd5
+gcc -Wall -Wextra -g -O0 -c testmd5.c
+gcc -Wall -Wextra -g -O0 -c calcmd5.c
+gcc testmd5.o calcmd5.o -lmhash -o testmd5
 #rm *.o
 #clear
 #ls -tlh

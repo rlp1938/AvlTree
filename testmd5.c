@@ -2,32 +2,26 @@
 #include <mhash.h>
 #include <stdio.h>
 #include <string.h>
+#include <errno.h>
+#include "calcmd5.h"
 
 int
 main(int argc, char **argv)
 {
-  size_t i, j, hash_blocksize, bytes_read;
-  MHASH td;
-  unsigned char buffer[1024];
-  unsigned char hash[16]; /* fits MD5 */
-  char sum[33];
-
-  td = mhash_init(MHASH_MD5);
-  if (td == MHASH_FAILED) {
-    perror("Hash init failed");
-    exit(EXIT_FAILURE);
+  
+  if (argc < 2) {
+    fputs("Requires an argument\n", stderr);
+    exit(1);
   }
-  hash_blocksize = mhash_get_block_size(MHASH_MD5);
-  while ((bytes_read = fread(buffer, 1, 1024, stdin)) > 0) {
-    mhash(td, buffer, bytes_read);
+  char *path = argv[1];
+  FILE *fpi = fopen(path, "r");
+  if (!fpi) {
+    perror(path);
+    exit(1);
   }
-
-
-  mhash_deinit(td, hash);
-
-  for (i = 0; i < hash_blocksize; i++) {
-    printf("%.2x", hash[i]);
-  }
-  printf("\n");
+  char *sumout = calloc(33, 1);
+  calcmd5(fpi, sumout);
+  printf("%s\n", sumout);
+  free(sumout);
   return 0;
 } // main()
