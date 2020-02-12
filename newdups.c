@@ -172,6 +172,8 @@ int main(int argc, char **argv)
     if (fr[i].inode == fr[i-1].inode) fr[i].md5 = fr[i-1].md5;
     else fr[i].md5 = xstrdup(md5frompath(fr[i].path));
   }
+  /* Now sort the list on md5sum order. */
+
   return 0;
 } // main()
 
@@ -330,5 +332,7 @@ static char
     perror(path);
     exit(EXIT_FAILURE);
   }
-  return calcmd5(fp);
+  char *res = calcmd5(fp);
+  fclose(fp);
+  return res;
 } // md5frompath()
