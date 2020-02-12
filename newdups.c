@@ -52,6 +52,8 @@ static void
 recursedir_act(const char *dirname, filerec *fr);
 static int
 cmpfsize_inodep(const void *p1, const void *p2);
+static int
+cmpinodep(const void *p1, const void *p2);
 
 // Global vars
 int rec_count, idx;
@@ -157,6 +159,8 @@ int main(int argc, char **argv)
     } // if()
   } // for(i...)
   recs2 = j;
+  /* Now sort the list, fr in inode order. */
+  qsort(fr, recs2, sizeof(struct filerec), cmpinodep);
   return 0;
 } // main()
 
@@ -277,3 +281,21 @@ cmpfsize_inodep(const void *p1, const void *p2)
     }
   }
 } // cmpfsize_inodep()
+
+static int
+cmpinodep(const void *p1, const void *p2)
+{
+  filerec *frp1 = (filerec *)p1;
+  filerec *frp2 = (filerec *)p2;
+
+  /* I can not just rely on a simple subtaction because I am operating
+   * on 8 byte numbers which can generate results that overflow an int.
+  */
+  if (frp1->inode > frp2->inode) {
+    return 1;
+  } else if (frp1->inode < frp2->inode) {
+    return -1;
+  } else {
+    return 0;
+  }
+} // cmpinodep()
