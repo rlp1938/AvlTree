@@ -54,7 +54,8 @@ static int
 cmpfsize_inodep(const void *p1, const void *p2);
 static int
 cmpinodep(const void *p1, const void *p2);
-
+static char
+*xstrdup(const char *s);
 // Global vars
 int rec_count, idx;
 
@@ -161,6 +162,8 @@ int main(int argc, char **argv)
   recs2 = j;
   /* Now sort the list, fr in inode order. */
   qsort(fr, recs2, sizeof(struct filerec), cmpinodep);
+  /* Calculate md5sums of items in list. fr. */
+  
   return 0;
 } // main()
 
@@ -299,3 +302,14 @@ cmpinodep(const void *p1, const void *p2)
     return 0;
   }
 } // cmpinodep()
+
+static char
+*xstrdup(const char *s)
+{ /* strdup with error handling */
+  char *r = strdup(s);
+  if (!r) {
+    perror(s);
+    exit(EXIT_FAILURE);
+  }
+  return r;
+} // xstrdup()
