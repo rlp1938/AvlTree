@@ -31,6 +31,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <mhash.h>
+#include "calcmd5.h"
 
 typedef struct filerec {
   char *path;
@@ -56,6 +57,9 @@ static int
 cmpinodep(const void *p1, const void *p2);
 static char
 *xstrdup(const char *s);
+static char
+*md5frompath(const char *path);
+
 // Global vars
 int rec_count, idx;
 
@@ -163,7 +167,11 @@ int main(int argc, char **argv)
   /* Now sort the list, fr in inode order. */
   qsort(fr, recs2, sizeof(struct filerec), cmpinodep);
   /* Calculate md5sums of items in list. fr. */
-  
+  fr[0].md5 = xstrdup(md5frompath(fr[0].path));
+  for (i = 1; i < recs2; i++) {
+    if (fr[i].inode == fr[i-1].inode) fr[i].md5 = fr[i-1].md5;
+    else fr[i].md5 = xstrdup(md5frompath(fr[i].path));
+  }
   return 0;
 } // main()
 
@@ -313,3 +321,14 @@ static char
   }
   return r;
 } // xstrdup()
+
+static char
+*md5frompath(const char *path)
+{
+  FILE *fp = fopen(path, "r");
+  if (!fp) {
+    perror(path);
+    exit(EXIT_FAILURE);
+  }
+  return calcmd5(fp);
+} // md5frompath()
