@@ -105,6 +105,7 @@ int main(int argc, char **argv)
   for (i = 0; i < rec_count; i++) {
     if (fr[i].fsize > 0 && fr[i].delete_flag == 0) recs1++;
   } // for(i...)
+  show("Unique file sized records to be deleted.");
   shown("File records to retain", recs1);
   /* Records are in order of size, and inode as a secondary key. These
    * records will be placed in a second list, fr1 for further action. */
@@ -126,20 +127,18 @@ int main(int argc, char **argv)
    * one hard linked group. Any such groups will be identified at md5sum
    * processing time.
   */
-  size_t starting_size = fr1[0].fsize;
   ino_t starting_inode = fr1[0].inode;
   int starting_index = 0;
   for (i = 1; i < recs1; i++) {
-    if (fr1[i].fsize != starting_size) {
-      if (fr1[i-1].inode == starting_inode) { // singleton inode block
+    if (fr1[i].fsize != fr1[i-1].fsize) { // breaks on file size.
+      if (fr1[i-1].inode == starting_inode) { // singleton inode block.
         for (j = starting_index; j < i; j++) {
           fr1[j].delete_flag = 1;
         }
-      }
-    }
-    starting_index = i;
-    starting_inode = fr1[i].inode;
-    starting_size = fr1[i].fsize;
+      } // if (inode...)
+      starting_index = i;
+      starting_inode = fr1[i].inode;
+    } // if (fsize)
   }
   // count the number of items to go to the next list.
   j = 0;
@@ -147,6 +146,8 @@ int main(int argc, char **argv)
     if (fr1[i].delete_flag == 0) j++;
   }
   int recs2 = j;
+  show("File records in hard linked blocks checked for deletion.");
+  shown("File records to retain", recs2);
   return 0;
 } // main()
 
