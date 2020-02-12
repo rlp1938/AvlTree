@@ -148,6 +148,15 @@ int main(int argc, char **argv)
   int recs2 = j;
   show("File records in hard linked blocks checked for deletion.");
   shown("File records to retain", recs2);
+  /* write the non-deletes back to the originting array. */
+  j = 0;
+  for (i = 0; i < recs1; i++) {
+    if (fr1[i].delete_flag == 0) {
+      fr[j] = fr1[i];
+      j++;
+    } // if()
+  } // for(i...)
+  recs2 = j;
   return 0;
 } // main()
 
