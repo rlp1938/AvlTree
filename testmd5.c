@@ -19,9 +19,8 @@ main(int argc, char **argv)
     perror(path);
     exit(1);
   }
-  char *sumout = calloc(33, 1);
-  calcmd5(fpi, sumout);
+
+char *sumout = calcmd5(fpi);
   printf("%s\n", sumout);
-  free(sumout);
   return 0;
 } // main()

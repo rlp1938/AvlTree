@@ -8,7 +8,7 @@
 #include <errno.h>
 #include <unistd.h>
 
-void
-calcmd5(FILE *fpi, char *sumout);
+char 
+*calcmd5(FILE *fpi);
 
 #endif /* calcmd5.h  */
