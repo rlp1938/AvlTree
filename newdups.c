@@ -59,6 +59,8 @@ static char
 *xstrdup(const char *s);
 static char
 *md5frompath(const char *path);
+static int
+cmpmd5p(const void *p1, const void *p2);
 
 // Global vars
 int rec_count, idx;
@@ -173,7 +175,23 @@ int main(int argc, char **argv)
     else fr[i].md5 = xstrdup(md5frompath(fr[i].path));
   }
   /* Now sort the list on md5sum order. */
-
+  qsort(fr, recs2, sizeof(struct filerec), cmpmd5p);
+  /* mark unique md5sums for deletions.*/
+  if (strcmp(fr[0].md5, fr[1].md5) != 0) fr[0].delete_flag = 1;
+  for (i = 1; i < recs2-1; i++) {
+    if (strcmp(fr[i].md5, fr[i-1].md5) != 0 &&
+        strcmp(fr[i].md5, fr[i+1].md5) != 0) {
+      fr[i].delete_flag = 1;
+    }
+  }
+  if (strcmp(fr[recs2-1].md5, fr[recs2-2].md5) != 0)
+    fr[recs2-1].delete_flag = 1;
+  show("Records with unique md5sums to be deleted.");
+  int recs3 = 0;
+  for (i = 0; i < recs2; i++) {
+    if (fr[i].delete_flag == 0) recs3++;
+  }
+  shown("File records to retain", recs3);
   return 0;
 } // main()
 
@@ -336,3 +354,11 @@ static char
   fclose(fp);
   return res;
 } // md5frompath()
+
+static int
+cmpmd5p(const void *p1, const void *p2)
+{ /* md5 sums are just C strings. */
+  filerec *frp1 = (filerec *)p1;
+  filerec *frp2 = (filerec *)p2;
+  return strcmp(frp1->md5, frp2->md5);
+} // cmpmd5p()
