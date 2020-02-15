@@ -192,6 +192,25 @@ int main(int argc, char **argv)
     if (fr[i].delete_flag == 0) recs3++;
   }
   shown("File records to retain", recs3);
+  /* Copy records to list fr1, deleteable records excepted. */
+  j = 0;
+  for (i = 0; i < recs2; i++) {
+    if (fr[i].delete_flag == 0) {
+      fr1[j] = fr[i];
+      j++;
+    }
+  }
+  recs3 = j;  // redundant check.
+  /* Serialise the data records. Field seperator is \t, record
+   * seperator is \n */
+
+  show("Duplicates serialised in file 'dups.lst'");
+  FILE *fpo = fopen("dups.lst", "w");
+  for (i = 0; i < recs3; i++) {
+    fprintf(fpo, "%s\t%lu\t%lu\t%s\n", fr1[i].md5, fr1[i].inode,
+    fr1[i].fsize, fr1[i].path);
+  }
+  fclose(fpo);
   return 0;
 } // main()
 
