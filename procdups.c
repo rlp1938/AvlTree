@@ -41,10 +41,14 @@ static fdata
 *readfile(const char *path);
 static void
 *xcalloc(size_t count, size_t size);
+static
+int lines2cstr(fdata *fd);
+
 
 int main(void)
 {
   fdata *fd = readfile("dups.lst");
+  int lc = lines2cstr(fd);
   return 0;
 }
 
@@ -92,3 +96,18 @@ static void
   }
   return p;
 } // xcalloc()
+
+static
+int lines2cstr(fdata *fd)
+{ /* replaces all '\n' with '\0' and returns the count of it. */
+  size_t i, s;
+  int count = 0;
+  s = fd->finis - fd->begin;
+  for (i = 0; i < s; i++) {
+    if (fd->begin[i] == '\n') {
+      fd->begin[i] = '\0';
+      count++;
+    }
+  }
+  return count;
+} // lines2cstr()
