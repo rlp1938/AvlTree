@@ -28,6 +28,7 @@ gcc -Wall -Wextra -O0 -g -c newdups.c
 gcc -Wall -Wextra -O0 -g -c calcmd5.c
 gcc newdups.o calcmd5.o -lmhash -o dups
 
+gcc -Wall -Wextra -O0 -g -o procdups procdups.c
 
 #gcc -Wall -Wextra -g -O0 -c testmd5.c
 #gcc -Wall -Wextra -g -O0 -c calcmd5.c
