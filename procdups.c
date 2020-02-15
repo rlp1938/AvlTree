@@ -43,12 +43,22 @@ static void
 *xcalloc(size_t count, size_t size);
 static
 int lines2cstr(fdata *fd);
-
+static void
+dosystem(const char *cmd);
 
 int main(void)
 {
   fdata *fd = readfile("dups.lst");
   int lc = lines2cstr(fd);
+  char **strarray = xcalloc(lc, sizeof(char **));
+  int i;
+  char *cp = fd->begin;
+  for (i = 0; i < lc; i++) {
+    strarray[i] = cp;
+    cp += strlen(cp) + 1;
+  }
+  free(strarray);
+  free(fd);
   return 0;
 }
 
@@ -111,3 +121,20 @@ int lines2cstr(fdata *fd)
   }
   return count;
 } // lines2cstr()
+
+void dosystem(const char *cmd)
+{
+  const int status = system(cmd);
+
+    if (status == -1) {
+        fprintf(stderr, "system failed to execute: %s\n", cmd);
+        exit(EXIT_FAILURE);
+    }
+
+    if (!WIFEXITED(status) || WEXITSTATUS(status)) {
+        fprintf(stderr, "%s failed with non-zero exit\n", cmd);
+        exit(EXIT_FAILURE);
+    }
+
+    return;
+} // dosystem()
