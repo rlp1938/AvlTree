@@ -37,6 +37,12 @@ typedef struct fdata {
   char *finis;
 } fdata;
 
+typedef struct opdata {
+  int first;    // first index of interest into list.
+  int last;     // last index of interest into list.    
+  char **list;  // array of C strings.
+} opdata;
+
 static fdata
 *readfile(const char *path);
 static void
@@ -45,6 +51,12 @@ static
 int lines2cstr(fdata *fd);
 static void
 dosystem(const char *cmd);
+static void
+actondups(char **items);
+static char
+*parseline(const char *s);
+static void
+rewrite_dups(char **list, int last);
 
 int main(void)
 {
@@ -57,10 +69,11 @@ int main(void)
     strarray[i] = cp;
     cp += strlen(cp) + 1;
   }
+  actondups(strarray);
   free(strarray);
   free(fd);
   return 0;
-}
+} // main()
 
 fdata
 *readfile(const char *path)
@@ -138,3 +151,84 @@ void dosystem(const char *cmd)
 
     return;
 } // dosystem()
+
+static void
+actondups(char **items)
+{ /* Display groups of dup, get user requirements, and act as
+  * specified */
+  int i = 0;
+  while (items[i]) {
+    dosystem("/usr/bin/clear");
+    char sumbuf[33];
+    strncpy(sumbuf, items[i], 32);
+    sumbuf[32] = '\0';
+    fprintf(stdout, "md5sum: %s\n", sumbuf);
+    fprintf(stdout, "%s\n", parseline(items[i]));
+    int first = i;
+    int j = i + 1;
+    while ((items[j] && strncmp(items[first], items[j], 8) == 0)) {
+      fprintf(stdout, "%s\n", parseline(items[j]));
+      j++;
+    }
+    int last = j;
+    fputs("Replies are case insesnitive.\n", stdout);
+    fprintf(stdout, "Quit without rewrite (q)  Rewrite dups.lst then"
+    " quit (s)\nShow next group, no action on this one (N)"
+    "\n? ");
+    char ans[4];
+    fgets(ans, 4, stdin);
+    switch (ans[0]) {
+      case 'q': // quit without rewriting 'dups.lst'
+      case 'Q':
+        return;
+        break;
+      case 's': // rewrite 'dups.lst' and then quit.
+      case 'S':
+        rewrite_dups(items, last);
+        return;
+        break;
+      case 'n': // show next group without doing anything.
+      case 'N':
+        break;
+      default:
+        break;
+    } // switch()
+    i = j;
+  } // while(items[i])
+} // actondups()
+
+static char
+*parseline(const char *s)
+{ /* breaks the data line into separate fields for display. */
+  char work[PATH_MAX + 128];
+  static char out[2 * PATH_MAX];
+  strcpy(work, s+33);
+  char *fr = work;
+  char *to = strchr(work, '\t'); *to = '\0';
+  strcpy(out, "inode ");
+  strcat(out, fr);
+  fr = to + 1;
+  to = strchr(fr, '\t'); *to = '\0';
+  strcat(out, "\tsize ");
+  strcat(out, fr);
+  fr = strstr(to+1, "/home");
+  strcat(out, "\n");
+  strcat(out, fr);
+  return out;
+} // parseline()
+
+static void
+rewrite_dups(char **list, int last)
+{ /* last is the index of the last dups record displayed; required to
+  * rewrite 'dups.lst' from the record folowing. */
+  FILE *fpo = fopen("dups.lst", "w");
+  if (!fpo) {
+    perror("dups.lst");
+    exit(EXIT_FAILURE);
+  }
+  int i;
+  for (i = last; list[i]; i++) {
+    fprintf(fpo, "%s\n", list[i]);
+  }
+  fclose(fpo);
+} // rewrite_dups()
